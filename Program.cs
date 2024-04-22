@@ -82,47 +82,84 @@ class Program
         File.WriteAllLines(fileName, results);
     }
 
+    // Обчислення аналітичного значення методом Ньютона-Лейбница
+    static double AnalyticalSolution(double a, double b)
+    {
+        // Первообразная функції
+        double F(double x)
+        {
+            return Math.Log(0.4 + Math.Sqrt(Math.Pow(x, 2) + 7)) / 0.5;
+        }
+
+        return F(b) - F(a);
+    }
+
+    // Валідація вводу чисел
+    static double ValidateInput(string prompt)
+    {
+        double result;
+        while (true)
+        {
+            Console.WriteLine(prompt);
+            if (double.TryParse(Console.ReadLine(), out result))
+            {
+                return result;
+            }
+            else
+            {
+                Console.WriteLine("Введіть коректне число.");
+            }
+        }
+    }
+
+    // Валідація вводу цілих чисел
+    static int ValidateIntegerInput(string prompt)
+    {
+        int result;
+        while (true)
+        {
+            Console.WriteLine(prompt);
+            if (int.TryParse(Console.ReadLine(), out result))
+            {
+                return result;
+            }
+            else
+            {
+                Console.WriteLine("Введіть коректне ціле число.");
+            }
+        }
+    }
+
     static void Main()
     {
-        // Встановлення культури для коректного форматування даних
         CultureInfo.CurrentCulture = new CultureInfo("uk-UA");
-
-        // Формування імені файлу на основі поточної дати та часу
         string fileName = $"Results_{DateTime.Now:yyyy-MM-dd_HH-mm-ss}.txt";
 
-        // Вибір методу інтегрування
         Console.WriteLine("Виберіть метод інтегрування:");
         Console.WriteLine("1 - Ліві прямокутники");
         Console.WriteLine("2 - Праві прямокутники");
         Console.WriteLine("3 - Прямокутники посередині");
         Console.WriteLine("4 - Трапеції");
         Console.WriteLine("5 - Метод Сімпсона");
-        int methodChoice = int.Parse(Console.ReadLine());
+        int methodChoice = ValidateIntegerInput("Введіть номер методу:");
 
-        // Вибір способу введення даних
         Console.WriteLine("Введіть спосіб введення даних:");
         Console.WriteLine("1 - Вручну");
         Console.WriteLine("2 - З файлу");
-        int inputChoice = int.Parse(Console.ReadLine());
+        int inputChoice = ValidateIntegerInput("Введіть номер способу:");
 
         double a, b;
         int n = 1;
         double E = 1e-3;
         double result;
-        string[] outputLines = new string[1000]; // Масив для збереження результатів
-
+        string[] outputLines = new string[1000];
         int lineIndex = 0;
 
-        // Введення даних вручну
         if (inputChoice == 1)
         {
-            Console.WriteLine("Введіть початкову межу інтегрування a:");
-            a = double.Parse(Console.ReadLine());
-
-            Console.WriteLine("Введіть кінцеву межу інтегрування b:");
-            b = double.Parse(Console.ReadLine());
+            a = ValidateInput("Введіть початкову межу інтегрування a:");
+            b = ValidateInput("Введіть кінцеву межу інтегрування b:");
         }
-        // Зчитування даних з файлу
         else
         {
             Console.WriteLine("Введіть шлях до файлу:");
@@ -135,7 +172,6 @@ class Program
         outputLines[lineIndex++] = "Метод\t\t\tАпроксимація\t\tПохибка";
         outputLines[lineIndex++] = "--------------------------------------------------";
 
-        // Вибір методу та обчислення результатів
         switch (methodChoice)
         {
             case 1:
@@ -183,10 +219,13 @@ class Program
                 break;
         }
 
-        // Зменшення розміру масиву до кількості заповнених елементів
+        double analyticalResult = AnalyticalSolution(a, b);
+        Console.WriteLine($"Аналітичне значення: {analyticalResult}");
+
+        outputLines[lineIndex++] = $"Аналітичне значення\t{analyticalResult}\t\t0";
+
         Array.Resize(ref outputLines, lineIndex);
 
-        // Збереження результатів в файл
         SaveResults(fileName, outputLines);
         Console.WriteLine($"Результати збережено в файлі {fileName}");
     }
