@@ -1,293 +1,257 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Text;
 
-public class TextViewer
+namespace IntegralCalculator
 {
-    // Метод для зміни кольору тексту у консолі
-    public static void ChangeColor(string text, ConsoleColor color)
+    public class TextViewer
     {
-        Console.ForegroundColor = color;
-        Console.WriteLine(text);
-        Console.ResetColor();
-    }
-}
-
-class Program
-{
-    // Функція для обчислення значення підінтегральної функції
-    static double Function(double x)
-    {
-        return Math.Cos(0.07 * 7 + 0.5 * x) / (0.4 + Math.Sqrt(Math.Pow(x, 2) + 7));
-    }
-
-    // Метод лівих прямокутників
-    static double LeftRectangleMethod(double a, double b, int n)
-    {
-        double h = (b - a) / n;
-        double sum = 0;
-        for (int i = 0; i < n; i++)
+        // Метод для зміни кольору тексту у консолі
+        public static void ChangeColor(string text, ConsoleColor color)
         {
-            sum += Function(a + i * h);
+            Console.ForegroundColor = color;
+            Console.WriteLine(text);
+            Console.ResetColor();
+            Console.ForegroundColor = ConsoleColor.Green;
         }
-        return h * sum;
     }
 
-    // Метод правих прямокутників
-    static double RightRectangleMethod(double a, double b, int n)
+    class Program
     {
-        double h = (b - a) / n;
-        double sum = 0;
-        for (int i = 1; i <= n; i++)
+        static void Main(string[] args)
         {
-            sum += Function(a + i * h);
-        }
-        return h * sum;
-    }
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.OutputEncoding = Encoding.Unicode;
 
-    // Метод прямокутників посередині
-    static double MidpointRectangleMethod(double a, double b, int n)
-    {
-        double h = (b - a) / n;
-        double sum = 0;
-        for (int i = 0; i < n; i++)
-        {
-            sum += Function(a + (i + 0.5) * h);
-        }
-        return h * sum;
-    }
-
-    // Метод трапецій
-    static double TrapezoidalMethod(double a, double b, int n)
-    {
-        double h = (b - a) / n;
-        double sum = (Function(a) + Function(b)) / 2;
-        for (int i = 1; i < n; i++)
-        {
-            sum += Function(a + i * h);
-        }
-        return h * sum;
-    }
-
-    // Метод Сімпсона
-    static double SimpsonMethod(double a, double b, int n)
-    {
-        if (n % 2 != 0)
-        {
-            throw new ArgumentException("Кількість інтервалів повинна бути парна.");
-        }
-
-        double h = (b - a) / n;
-        double sum = Function(a) + Function(b);
-        for (int i = 1; i < n; i++)
-        {
-            double x = a + i * h;
-            sum += 2 * (i % 2 == 0 ? 2 : 1) * Function(x);
-        }
-        return (h / 3) * sum;
-    }
-
-    // Збереження результатів в файл
-    static void SaveResults(string fileName, string[] results)
-    {
-        File.WriteAllLines(fileName, results);
-    }
-
-    // Обчислення аналітичного значення методом Ньютона-Лейбница
-    static double AnalyticalSolution(double a, double b)
-    {
-        // Первинна функція
-        double F(double x)
-        {
-            return Math.Log(0.4 + Math.Sqrt(Math.Pow(x, 2) + 7)) / 0.5;
-        }
-
-        return F(b) - F(a);
-    }
-
-    // Валідація вводу чисел
-    static double ValidateInput(string prompt)
-    {
-        double result;
-        while (true)
-        {
-            Console.WriteLine(prompt);
-            if (double.TryParse(Console.ReadLine(), out result))
+            while (true) // Головний цикл програми
             {
-                return result;
-            }
-            else
-            {
-                TextViewer.ChangeColor("ПОМИЛКА: Некоректне введення. Введіть коректне число.", ConsoleColor.Red);
-            }
-        }
-    }
+                // Виведення меню для вибору методу обчислення інтеграла
+                Console.WriteLine("Виберіть метод обчислення інтеграла:");
+                Console.WriteLine("1. Ліві прямокутники");
+                Console.WriteLine("2. Праві прямокутники");
+                Console.WriteLine("3. Середні прямокутники");
+                Console.WriteLine("4. Трапеції");
+                Console.WriteLine("5. Сімпсон");
+                Console.WriteLine("6. Вихід");
 
-    // Валідація вводу цілих чисел
-    static int ValidateIntegerInput(string prompt)
-    {
-        int result;
-        while (true)
-        {
-            Console.WriteLine(prompt);
-            if (int.TryParse(Console.ReadLine(), out result))
-            {
-                return result;
-            }
-            else
-            {
-                TextViewer.ChangeColor("ПОМИЛКА: Некоректне введення. Введіть коректне ціле число.", ConsoleColor.Red);
-            }
-        }
-    }
-
-    static void Main()
-    {
-        Console.ForegroundColor = ConsoleColor.Green;
-        Console.OutputEncoding = Encoding.Unicode;
-
-        string fileName = $"Results_{DateTime.Now:yyyy-MM-dd_HH-mm-ss}.txt";
-
-        while (true)
-        {
-            Console.WriteLine("\nВиберіть дію:");
-            TextViewer.ChangeColor("\t1 - Вибрати метод інтегрування", ConsoleColor.Cyan);
-            TextViewer.ChangeColor("\t0 - Вийти з програми", ConsoleColor.Red);
-            int menuChoice = ValidateIntegerInput("Введіть номер дії:");
-
-            if (menuChoice == 0)
-            {
-                break;
-            }
-
-            while (true)
-            {
-                Console.WriteLine("\nВиберіть метод інтегрування:");
-                TextViewer.ChangeColor("\t1 - Ліві прямокутники", ConsoleColor.Cyan);
-                TextViewer.ChangeColor("\t2 - Праві прямокутники", ConsoleColor.Cyan);
-                TextViewer.ChangeColor("\t3 - Прямокутники посередині", ConsoleColor.Cyan);
-                TextViewer.ChangeColor("\t4 - Трапеції", ConsoleColor.Cyan);
-                TextViewer.ChangeColor("\t5 - Метод Сімпсона", ConsoleColor.Cyan);
-                TextViewer.ChangeColor("\t0 - Повернутися в головне меню", ConsoleColor.Red);
-                int methodChoice = ValidateIntegerInput("Введіть номер методу:");
-
-                if (methodChoice == 0)
+                int method;
+                // Валідація введеного значення методу
+                while (!int.TryParse(Console.ReadLine(), out method) || method < 1 || method > 6)
                 {
-                    break;
+                    Console.WriteLine("Введіть коректне число від 1 до 6.");
                 }
 
-                Console.WriteLine("\nВведіть спосіб введення даних:");
-                TextViewer.ChangeColor("\t1 - Вручну", ConsoleColor.Cyan);
-                TextViewer.ChangeColor("\t2 - З файлу", ConsoleColor.Cyan);
-                TextViewer.ChangeColor("\t0 - Повернутися в головне меню", ConsoleColor.Red);
-                int inputChoice = ValidateIntegerInput("Введіть номер способу:");
+                // Виведення меню для вибору методу введення даних
+                Console.WriteLine("Виберіть метод введення даних:");
+                Console.WriteLine("1. Вручну");
+                Console.WriteLine("2. З файлу");
 
-                if (inputChoice == 0)
+                int inputMethod;
+                // Валідація введеного значення методу введення даних
+                while (!int.TryParse(Console.ReadLine(), out inputMethod) || inputMethod < 1 || inputMethod > 2)
                 {
-                    break;
+                    Console.WriteLine("Введіть коректне число від 1 до 2.");
                 }
 
-                double a, b;
-                int n = 1;
-                double E = 1e-3;
-                double result;
-                string[] outputLines = new string[1000];
-                int lineIndex = 0;
+                double a, b, n;
+                if (inputMethod == 1) // Вручне введення даних
+                {
+                    // Введення початку інтервалу
+                    Console.WriteLine("Введіть початок інтервалу (a):");
+                    while (!double.TryParse(Console.ReadLine(), out a))
+                    {
+                        Console.WriteLine("Введіть коректне число.");
+                    }
 
-                if (inputChoice == 1)
-                {
-                    a = ValidateInput("\nВведіть початкову межу інтегрування a:");
-                    b = ValidateInput("\nВведіть кінцеву межу інтегрування b:");
+                    // Введення кінця інтервалу
+                    Console.WriteLine("Введіть кінець інтервалу (b):");
+                    while (!double.TryParse(Console.ReadLine(), out b) || b <= a)
+                    {
+                        Console.WriteLine("Введіть коректне число, більше за a.");
+                    }
+
+                    // Введення кількості розділень
+                    Console.WriteLine("Введіть кількість розділень (n):");
+                    while (!double.TryParse(Console.ReadLine(), out n) || n <= 0)
+                    {
+                        Console.WriteLine("Введіть коректне число, більше за 0.");
+                    }
                 }
-                else
+                else // Введення даних з файлу
                 {
-                    Console.WriteLine("\nВведіть шлях до файлу:");
+                    // Введення шляху до файлу
+                    Console.WriteLine("Введіть шлях до файлу:");
                     string filePath = Console.ReadLine();
-                    string[] lines = File.ReadAllLines(filePath);
+                    while (!File.Exists(filePath))
+                    {
+                        Console.WriteLine("Файл не існує. Введіть коректний шлях до файлу:");
+                        filePath = Console.ReadLine();
+                    }
+
+                    var lines = File.ReadAllLines(filePath);
                     a = double.Parse(lines[0]);
                     b = double.Parse(lines[1]);
+                    n = double.Parse(lines[2]);
+
+                    Console.WriteLine($"a = {a}, b = {b}, n = {n}");
                 }
 
-                outputLines[lineIndex++] = "Метод\t\t\tАпроксимація\t\tПохибка";
-                outputLines[lineIndex++] = "--------------------------------------------------";
+                // Ініціалізація та запуск таймера
+                Stopwatch stopwatch = new Stopwatch();
+                stopwatch.Start();
+                double result = 0;
 
-                int counter = 1;
-                switch (methodChoice)
+                // Вибір методу обчислення
+                switch (method)
                 {
                     case 1:
-                        do
-                        {
-                            var watch = System.Diagnostics.Stopwatch.StartNew();
-                            result = LeftRectangleMethod(a, b, n);
-                            watch.Stop();
-                            TextViewer.ChangeColor($"{counter} - Ліві прямокутники (n = {n}): {result}, Час виконання: {watch.ElapsedMilliseconds} мс", ConsoleColor.Magenta);
-                            outputLines[lineIndex++] = $"{counter} - Ліві прямокутники\t\t{result}\t\t{Math.Abs(result)}\t\t{watch.ElapsedMilliseconds} мс";
-                            n *= 2;
-                            counter++;
-                        } while (Math.Abs(result) > E);
+                        result = LeftRectangles(a, b, n);
                         break;
                     case 2:
-                        do
-                        {
-                            var watch = System.Diagnostics.Stopwatch.StartNew();
-                            result = RightRectangleMethod(a, b, n);
-                            watch.Stop();
-                            TextViewer.ChangeColor($"{counter} - Праві прямокутники (n = {n}): {result}, Час виконання: {watch.ElapsedMilliseconds} мс", ConsoleColor.Magenta);
-                            outputLines[lineIndex++] = $"{counter} - Праві прямокутники\t\t{result}\t\t{Math.Abs(result)}\t\t{watch.ElapsedMilliseconds} мс";
-                            n *= 2;
-                        } while (Math.Abs(result) > E);
+                        result = RightRectangles(a, b, n);
                         break;
                     case 3:
-                        do
-                        {
-                            var watch = System.Diagnostics.Stopwatch.StartNew();
-                            result = MidpointRectangleMethod(a, b, n);
-                            watch.Stop();
-                            TextViewer.ChangeColor($"{counter} - Прямокутники посередині (n = {n}): {result}, Час виконання: {watch.ElapsedMilliseconds} мс", ConsoleColor.Magenta);
-                            outputLines[lineIndex++] = $"{counter} - Прямокутники посередині\t{result}\t\t{Math.Abs(result)}\t\t{watch.ElapsedMilliseconds} мс";
-                            n *= 2;
-                        } while (Math.Abs(result) > E);
+                        result = MidpointRectangles(a, b, n);
                         break;
                     case 4:
-                        do
-                        {
-                            var watch = System.Diagnostics.Stopwatch.StartNew();
-                            result = TrapezoidalMethod(a, b, n);
-                            watch.Stop();
-                            TextViewer.ChangeColor($"{counter} - Трапеції (n = {n}): {result}, Час виконання: {watch.ElapsedMilliseconds} мс", ConsoleColor.Magenta);
-                            outputLines[lineIndex++] = $"{counter} - Трапеції\t\t{result}\t\t{Math.Abs(result)}\t\t{watch.ElapsedMilliseconds} мс";
-                            n *= 2;
-                        } while (Math.Abs(result) > E);
+                        result = Trapezoid(a, b, n);
                         break;
                     case 5:
-                        do
-                        {
-                            var watch = System.Diagnostics.Stopwatch.StartNew();
-                            result = SimpsonMethod(a, b, n);
-                            watch.Stop();
-                            TextViewer.ChangeColor($"{counter} - Метод Сімпсона (n = {n}): {result}, Час виконання: {watch.ElapsedMilliseconds} мс", ConsoleColor.Magenta);
-                            outputLines[lineIndex++] = $"{counter} - Метод Сімпсона\t\t{result}\t\t{Math.Abs(result)}\t\t{watch.ElapsedMilliseconds} мс";
-                            n *= 2;
-                        } while (Math.Abs(result) > E);
+                        result = Simpson(a, b, n);
                         break;
-                    default:
-                        TextViewer.ChangeColor("ПОМИЛКА: Невірний вибір методу. Повторіть спробу.", ConsoleColor.Red);
-                        break;
+                    case 6:
+                        return;
                 }
 
-                outputLines[lineIndex++] = $"Обраний метод: {methodChoice}";
-                outputLines[lineIndex++] = $"Тип вводу: {(inputChoice == 1 ? "Вручну" : "З файлу")}";
-                outputLines[lineIndex++] = $"Границі: [{a};{b}]";
+                // Зупинка таймера
+                stopwatch.Stop();
 
-                double analyticalResult = AnalyticalSolution(a, b);
-                TextViewer.ChangeColor($"Аналітичне значення: {analyticalResult}", ConsoleColor.Yellow);
-                outputLines[lineIndex++] = $"Аналітичне значення\t{analyticalResult}\t\t0";
+                // Виведення результату та часу обчислення
+                Console.WriteLine($"Результат: {result}");
+                Console.WriteLine($"Час обчислення: {stopwatch.ElapsedMilliseconds} мс");
 
-                Array.Resize(ref outputLines, lineIndex);
-
-                SaveResults(fileName, outputLines);
-                TextViewer.ChangeColor($"Результати збережено в файлі {fileName}", ConsoleColor.Yellow);
+                // Збереження результатів у файл
+                SaveToFile(a, b, n, result, stopwatch.ElapsedMilliseconds, method);
             }
+        }
+
+        // Функція для обчислення значення функції
+        static double Function(double x, double N)
+        {
+            return Math.Cos(0.07 * N + 0.5 * x) / (0.4 + Math.Sqrt(Math.Pow(x, 2) + N));
+        }
+
+        // Методи для обчислення інтеграла з різними методами
+
+        // Метод лівих прямокутників
+        static double LeftRectangles(double a, double b, double n)
+        {
+            double h = (b - a) / n;
+            double sum = 0;
+
+            for (double i = a; i < b; i += h)
+            {
+                double f = Function(i, n);
+                sum += f;
+                Console.WriteLine($"f({i}) = {f} * {h}");
+            }
+
+            return sum * h;
+        }
+
+        // Метод правих прямокутників
+        static double RightRectangles(double a, double b, double n)
+        {
+            double h = (b - a) / n;
+            double sum = 0;
+
+            for (double i = a + h; i <= b; i += h)
+            {
+                double f = Function(i, n);
+                sum += f;
+                Console.WriteLine($"f({i}) = {f} * {h}");
+            }
+
+            return sum * h;
+        }
+
+        // Метод середніх прямокутників
+        static double MidpointRectangles(double a, double b, double n)
+        {
+            double h = (b - a) / n;
+            double sum = 0;
+
+            for (double i = a + h / 2; i < b; i += h)
+            {
+                double f = Function(i, n);
+                sum += f;
+                Console.WriteLine($"f({i}) = {f} * {h}");
+            }
+
+            return sum * h;
+        }
+
+        // Метод трапецій
+        static double Trapezoid(double a, double b, double n)
+        {
+            double h = (b - a) / n;
+            double sum = 0;
+
+            for (int i = 1; i < n; i++)
+            {
+                double f = Function(a + i * h, n);
+                sum += f;
+                Console.WriteLine($"f({a + i * h}) = {f} * {h}");
+            }
+
+            return h * (0.5 * (Function(a, n) + Function(b, n)) + sum);
+        }
+
+        // Метод Сімпсона
+        static double Simpson(double a, double b, double n)
+        {
+            if (n % 2 != 0)
+            {
+                throw new ArgumentException("Кількість розділень повинна бути парним числом.");
+            }
+
+            double h = (b - a) / n;
+            double sum1 = 0;
+            double sum2 = 0;
+
+            for (int i = 1; i < n; i += 2)
+            {
+                double f = Function(a + i * h, n);
+                sum1 += f;
+                Console.WriteLine($"f({a + i * h}) = {f} * {h}");
+            }
+
+            for (int i = 2; i < n - 1; i += 2)
+            {
+                double f = Function(a + i * h, n);
+                sum2 += f;
+                Console.WriteLine($"f({a + i * h}) = {f} * {h}");
+            }
+
+            return h / 3 * (Function(a, n) + 4 * sum1 + 2 * sum2 + Function(b, n));
+        }
+
+        // Метод для збереження результатів у файл
+        static void SaveToFile(double a, double b, double n, double result, long elapsedTime, int method)
+        {
+            string fileName = $"Result_{DateTime.Now:yyyyMMddHHmmss}.txt";
+
+            using (StreamWriter writer = new StreamWriter(fileName, true))
+            {
+                writer.WriteLine($"Метод: {method}");
+                writer.WriteLine($"a = {a}, b = {b}, n = {n}");
+                writer.WriteLine($"Результат: {result}");
+                writer.WriteLine($"Час обчислення: {elapsedTime} мс");
+                writer.WriteLine(new string('-', 50));
+            }
+
+            Console.WriteLine($"Результати збережено у файл {fileName}");
         }
     }
 }
