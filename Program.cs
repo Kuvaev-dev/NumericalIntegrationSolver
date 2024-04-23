@@ -2,6 +2,17 @@
 using System.IO;
 using System.Text;
 
+public class TextViewer
+{
+    // Метод для зміни кольору тексту у консолі
+    public static void ChangeColor(string text, ConsoleColor color)
+    {
+        Console.ForegroundColor = color;
+        Console.WriteLine(text);
+        Console.ResetColor();
+    }
+}
+
 class Program
 {
     // Функція для обчислення значення підінтегральної функції
@@ -107,7 +118,7 @@ class Program
             }
             else
             {
-                Console.WriteLine("Введіть коректне число.");
+                TextViewer.ChangeColor("ПОМИЛКА: Некоректне введення. Введіть коректне число.", ConsoleColor.Red);
             }
         }
     }
@@ -125,7 +136,7 @@ class Program
             }
             else
             {
-                Console.WriteLine("Введіть коректне ціле число.");
+                TextViewer.ChangeColor("ПОМИЛКА: Некоректне введення. Введіть коректне ціле число.", ConsoleColor.Red);
             }
         }
     }
@@ -139,9 +150,9 @@ class Program
 
         while (true)
         {
-            Console.WriteLine("Виберіть дію:");
-            Console.WriteLine("1 - Вибрати метод інтегрування");
-            Console.WriteLine("0 - Вийти з програми");
+            Console.WriteLine("\nВиберіть дію:");
+            TextViewer.ChangeColor("\t1 - Вибрати метод інтегрування", ConsoleColor.Cyan);
+            TextViewer.ChangeColor("\t0 - Вийти з програми", ConsoleColor.Red);
             int menuChoice = ValidateIntegerInput("Введіть номер дії:");
 
             if (menuChoice == 0)
@@ -151,13 +162,13 @@ class Program
 
             while (true)
             {
-                Console.WriteLine("Виберіть метод інтегрування:");
-                Console.WriteLine("1 - Ліві прямокутники");
-                Console.WriteLine("2 - Праві прямокутники");
-                Console.WriteLine("3 - Прямокутники посередині");
-                Console.WriteLine("4 - Трапеції");
-                Console.WriteLine("5 - Метод Сімпсона");
-                Console.WriteLine("0 - Повернутися в головне меню");
+                Console.WriteLine("\nВиберіть метод інтегрування:");
+                TextViewer.ChangeColor("\t1 - Ліві прямокутники", ConsoleColor.Cyan);
+                TextViewer.ChangeColor("\t2 - Праві прямокутники", ConsoleColor.Cyan);
+                TextViewer.ChangeColor("\t3 - Прямокутники посередині", ConsoleColor.Cyan);
+                TextViewer.ChangeColor("\t4 - Трапеції", ConsoleColor.Cyan);
+                TextViewer.ChangeColor("\t5 - Метод Сімпсона", ConsoleColor.Cyan);
+                TextViewer.ChangeColor("\t0 - Повернутися в головне меню", ConsoleColor.Red);
                 int methodChoice = ValidateIntegerInput("Введіть номер методу:");
 
                 if (methodChoice == 0)
@@ -165,10 +176,10 @@ class Program
                     break;
                 }
 
-                Console.WriteLine("Введіть спосіб введення даних:");
-                Console.WriteLine("1 - Вручну");
-                Console.WriteLine("2 - З файлу");
-                Console.WriteLine("0 - Повернутися в головне меню");
+                Console.WriteLine("\nВведіть спосіб введення даних:");
+                TextViewer.ChangeColor("\t1 - Вручну", ConsoleColor.Cyan);
+                TextViewer.ChangeColor("\t2 - З файлу", ConsoleColor.Cyan);
+                TextViewer.ChangeColor("\t0 - Повернутися в головне меню", ConsoleColor.Red);
                 int inputChoice = ValidateIntegerInput("Введіть номер способу:");
 
                 if (inputChoice == 0)
@@ -185,12 +196,12 @@ class Program
 
                 if (inputChoice == 1)
                 {
-                    a = ValidateInput("Введіть початкову межу інтегрування a:");
-                    b = ValidateInput("Введіть кінцеву межу інтегрування b:");
+                    a = ValidateInput("\nВведіть початкову межу інтегрування a:");
+                    b = ValidateInput("\nВведіть кінцеву межу інтегрування b:");
                 }
                 else
                 {
-                    Console.WriteLine("Введіть шлях до файлу:");
+                    Console.WriteLine("\nВведіть шлях до файлу:");
                     string filePath = Console.ReadLine();
                     string[] lines = File.ReadAllLines(filePath);
                     a = double.Parse(lines[0]);
@@ -200,6 +211,7 @@ class Program
                 outputLines[lineIndex++] = "Метод\t\t\tАпроксимація\t\tПохибка";
                 outputLines[lineIndex++] = "--------------------------------------------------";
 
+                int counter = 1;
                 switch (methodChoice)
                 {
                     case 1:
@@ -208,9 +220,10 @@ class Program
                             var watch = System.Diagnostics.Stopwatch.StartNew();
                             result = LeftRectangleMethod(a, b, n);
                             watch.Stop();
-                            Console.WriteLine($"Ліві прямокутники (n = {n}): {result}, Час виконання: {watch.ElapsedMilliseconds} мс");
-                            outputLines[lineIndex++] = $"Ліві прямокутники\t\t{result}\t\t{Math.Abs(result)}\t\t{watch.ElapsedMilliseconds} мс";
+                            TextViewer.ChangeColor($"{counter} - Ліві прямокутники (n = {n}): {result}, Час виконання: {watch.ElapsedMilliseconds} мс", ConsoleColor.Magenta);
+                            outputLines[lineIndex++] = $"{counter} - Ліві прямокутники\t\t{result}\t\t{Math.Abs(result)}\t\t{watch.ElapsedMilliseconds} мс";
                             n *= 2;
+                            counter++;
                         } while (Math.Abs(result) > E);
                         break;
                     case 2:
@@ -219,8 +232,8 @@ class Program
                             var watch = System.Diagnostics.Stopwatch.StartNew();
                             result = RightRectangleMethod(a, b, n);
                             watch.Stop();
-                            Console.WriteLine($"Праві прямокутники (n = {n}): {result}, Час виконання: {watch.ElapsedMilliseconds} мс");
-                            outputLines[lineIndex++] = $"Праві прямокутники\t\t{result}\t\t{Math.Abs(result)}\t\t{watch.ElapsedMilliseconds} мс";
+                            TextViewer.ChangeColor($"{counter} - Праві прямокутники (n = {n}): {result}, Час виконання: {watch.ElapsedMilliseconds} мс", ConsoleColor.Magenta);
+                            outputLines[lineIndex++] = $"{counter} - Праві прямокутники\t\t{result}\t\t{Math.Abs(result)}\t\t{watch.ElapsedMilliseconds} мс";
                             n *= 2;
                         } while (Math.Abs(result) > E);
                         break;
@@ -230,8 +243,8 @@ class Program
                             var watch = System.Diagnostics.Stopwatch.StartNew();
                             result = MidpointRectangleMethod(a, b, n);
                             watch.Stop();
-                            Console.WriteLine($"Прямокутники посередині (n = {n}): {result}, Час виконання: {watch.ElapsedMilliseconds} мс");
-                            outputLines[lineIndex++] = $"Прямокутники посередині\t{result}\t\t{Math.Abs(result)}\t\t{watch.ElapsedMilliseconds} мс";
+                            TextViewer.ChangeColor($"{counter} - Прямокутники посередині (n = {n}): {result}, Час виконання: {watch.ElapsedMilliseconds} мс", ConsoleColor.Magenta);
+                            outputLines[lineIndex++] = $"{counter} - Прямокутники посередині\t{result}\t\t{Math.Abs(result)}\t\t{watch.ElapsedMilliseconds} мс";
                             n *= 2;
                         } while (Math.Abs(result) > E);
                         break;
@@ -241,8 +254,8 @@ class Program
                             var watch = System.Diagnostics.Stopwatch.StartNew();
                             result = TrapezoidalMethod(a, b, n);
                             watch.Stop();
-                            Console.WriteLine($"Трапеції (n = {n}): {result}, Час виконання: {watch.ElapsedMilliseconds} мс");
-                            outputLines[lineIndex++] = $"Трапеції\t\t{result}\t\t{Math.Abs(result)}\t\t{watch.ElapsedMilliseconds} мс";
+                            TextViewer.ChangeColor($"{counter} - Трапеції (n = {n}): {result}, Час виконання: {watch.ElapsedMilliseconds} мс", ConsoleColor.Magenta);
+                            outputLines[lineIndex++] = $"{counter} - Трапеції\t\t{result}\t\t{Math.Abs(result)}\t\t{watch.ElapsedMilliseconds} мс";
                             n *= 2;
                         } while (Math.Abs(result) > E);
                         break;
@@ -252,13 +265,13 @@ class Program
                             var watch = System.Diagnostics.Stopwatch.StartNew();
                             result = SimpsonMethod(a, b, n);
                             watch.Stop();
-                            Console.WriteLine($"Метод Сімпсона (n = {n}): {result}, Час виконання: {watch.ElapsedMilliseconds} мс");
-                            outputLines[lineIndex++] = $"Метод Сімпсона\t\t{result}\t\t{Math.Abs(result)}\t\t{watch.ElapsedMilliseconds} мс";
+                            TextViewer.ChangeColor($"{counter} - Метод Сімпсона (n = {n}): {result}, Час виконання: {watch.ElapsedMilliseconds} мс", ConsoleColor.Magenta);
+                            outputLines[lineIndex++] = $"{counter} - Метод Сімпсона\t\t{result}\t\t{Math.Abs(result)}\t\t{watch.ElapsedMilliseconds} мс";
                             n *= 2;
                         } while (Math.Abs(result) > E);
                         break;
                     default:
-                        Console.WriteLine("Невірний вибір методу.");
+                        TextViewer.ChangeColor("ПОМИЛКА: Невірний вибір методу. Повторіть спробу.", ConsoleColor.Red);
                         break;
                 }
 
@@ -267,13 +280,13 @@ class Program
                 outputLines[lineIndex++] = $"Границі: [{a};{b}]";
 
                 double analyticalResult = AnalyticalSolution(a, b);
-                Console.WriteLine($"Аналітичне значення: {analyticalResult}");
+                TextViewer.ChangeColor($"Аналітичне значення: {analyticalResult}", ConsoleColor.Yellow);
                 outputLines[lineIndex++] = $"Аналітичне значення\t{analyticalResult}\t\t0";
 
                 Array.Resize(ref outputLines, lineIndex);
 
                 SaveResults(fileName, outputLines);
-                Console.WriteLine($"Результати збережено в файлі {fileName}");
+                TextViewer.ChangeColor($"Результати збережено в файлі {fileName}", ConsoleColor.Yellow);
             }
         }
     }
