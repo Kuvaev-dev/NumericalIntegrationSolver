@@ -28,54 +28,56 @@ namespace IntegralCalculator
             {
                 // Виведення меню для вибору методу обчислення інтеграла
                 Console.WriteLine("Виберіть метод обчислення інтеграла:");
-                Console.WriteLine("1. Ліві прямокутники");
-                Console.WriteLine("2. Праві прямокутники");
-                Console.WriteLine("3. Середні прямокутники");
-                Console.WriteLine("4. Трапеції");
-                Console.WriteLine("5. Сімпсон");
-                Console.WriteLine("6. Вихід");
+                TextViewer.ChangeColor("\n\t1. Ліві прямокутники", ConsoleColor.Cyan);
+                TextViewer.ChangeColor("\t2. Праві прямокутники", ConsoleColor.Cyan);
+                TextViewer.ChangeColor("\t3. Середні прямокутники", ConsoleColor.Cyan);
+                TextViewer.ChangeColor("\t4. Трапеції", ConsoleColor.Cyan);
+                TextViewer.ChangeColor("\t5. Сімпсон", ConsoleColor.Cyan);
+                TextViewer.ChangeColor("\t6. Вихід\n", ConsoleColor.Red);
+                Console.Write("Ваш вибір (1-6): ");
 
                 int method;
                 // Валідація введеного значення методу
                 while (!int.TryParse(Console.ReadLine(), out method) || method < 1 || method > 6)
                 {
-                    Console.WriteLine("Введіть коректне число від 1 до 6.");
+                    TextViewer.ChangeColor("\nПОМИЛКА: Введіть коректне число від 1 до 6.", ConsoleColor.Red);
                 }
 
                 // Виведення меню для вибору методу введення даних
-                Console.WriteLine("Виберіть метод введення даних:");
-                Console.WriteLine("1. Вручну");
-                Console.WriteLine("2. З файлу");
+                Console.WriteLine("\nВиберіть метод введення даних:");
+                TextViewer.ChangeColor("\n\t1. Вручну", ConsoleColor.Cyan);
+                TextViewer.ChangeColor("\t2. З файлу\n", ConsoleColor.Cyan);
+                Console.Write("Ваш вибір (1-2): ");
 
                 int inputMethod;
                 // Валідація введеного значення методу введення даних
                 while (!int.TryParse(Console.ReadLine(), out inputMethod) || inputMethod < 1 || inputMethod > 2)
                 {
-                    Console.WriteLine("Введіть коректне число від 1 до 2.");
+                    TextViewer.ChangeColor("\nПОМИЛКА: Введіть коректне число від 1 до 2.", ConsoleColor.Red);
                 }
 
                 double a, b, n;
                 if (inputMethod == 1) // Вручне введення даних
                 {
                     // Введення початку інтервалу
-                    Console.WriteLine("Введіть початок інтервалу (a):");
+                    Console.WriteLine("\nВведіть початок інтервалу (a):");
                     while (!double.TryParse(Console.ReadLine(), out a))
                     {
-                        Console.WriteLine("Введіть коректне число.");
+                        TextViewer.ChangeColor("\nПОМИЛКА: Введіть коректне число.", ConsoleColor.Red);
                     }
 
                     // Введення кінця інтервалу
                     Console.WriteLine("Введіть кінець інтервалу (b):");
                     while (!double.TryParse(Console.ReadLine(), out b) || b <= a)
                     {
-                        Console.WriteLine("Введіть коректне число, більше за a.");
+                        TextViewer.ChangeColor("\nПОМИЛКА: Введіть коректне число, більше за a.", ConsoleColor.Cyan);
                     }
 
                     // Введення кількості розділень
                     Console.WriteLine("Введіть кількість розділень (n):");
                     while (!double.TryParse(Console.ReadLine(), out n) || n <= 0)
                     {
-                        Console.WriteLine("Введіть коректне число, більше за 0.");
+                        TextViewer.ChangeColor("\nПОМИЛКА: Введіть коректне число, більше за 0.", ConsoleColor.Red);
                     }
                 }
                 else // Введення даних з файлу
@@ -85,7 +87,7 @@ namespace IntegralCalculator
                     string filePath = Console.ReadLine();
                     while (!File.Exists(filePath))
                     {
-                        Console.WriteLine("Файл не існує. Введіть коректний шлях до файлу:");
+                        TextViewer.ChangeColor("\nПОМИЛКА: Файл не існує. Введіть коректний шлях до файлу:", ConsoleColor.Red);
                         filePath = Console.ReadLine();
                     }
 
@@ -102,22 +104,28 @@ namespace IntegralCalculator
                 stopwatch.Start();
                 double result = 0;
 
+                TextViewer.ChangeColor("\nРозв'язання\n", ConsoleColor.Cyan);
                 // Вибір методу обчислення
                 switch (method)
                 {
                     case 1:
+                        Console.WriteLine();
                         result = LeftRectangles(a, b, n);
                         break;
                     case 2:
+                        Console.WriteLine();
                         result = RightRectangles(a, b, n);
                         break;
                     case 3:
+                        Console.WriteLine();
                         result = MidpointRectangles(a, b, n);
                         break;
                     case 4:
+                        Console.WriteLine();
                         result = Trapezoid(a, b, n);
                         break;
                     case 5:
+                        Console.WriteLine();
                         result = Simpson(a, b, n);
                         break;
                     case 6:
@@ -128,11 +136,13 @@ namespace IntegralCalculator
                 stopwatch.Stop();
 
                 // Виведення результату та часу обчислення
-                Console.WriteLine($"Результат: {result}");
-                Console.WriteLine($"Час обчислення: {stopwatch.ElapsedMilliseconds} мс");
+                TextViewer.ChangeColor($"\nРезультат: {result}", ConsoleColor.Yellow);
+                TextViewer.ChangeColor($"\nЧас обчислення: {stopwatch.ElapsedMilliseconds} мс", ConsoleColor.Cyan);
 
                 // Збереження результатів у файл
                 SaveToFile(a, b, n, result, stopwatch.ElapsedMilliseconds, method);
+                Console.ReadKey();
+                Console.Clear();
             }
         }
 
@@ -157,6 +167,9 @@ namespace IntegralCalculator
                 Console.WriteLine($"f({i}) = {f} * {h}");
             }
 
+            double error = Math.Abs((b - a) * h * Function(a, n));
+            TextViewer.ChangeColor($"\nПогрішність: {error}", ConsoleColor.DarkMagenta);
+
             return sum * h;
         }
 
@@ -172,6 +185,9 @@ namespace IntegralCalculator
                 sum += f;
                 Console.WriteLine($"f({i}) = {f} * {h}");
             }
+
+            double error = Math.Abs((b - a) * h * Function(b, n));
+            TextViewer.ChangeColor($"\nПогрішність: {error}", ConsoleColor.DarkMagenta);
 
             return sum * h;
         }
@@ -189,6 +205,9 @@ namespace IntegralCalculator
                 Console.WriteLine($"f({i}) = {f} * {h}");
             }
 
+            double error = Math.Abs((b - a) * h * Function((a + b) / 2, n));
+            TextViewer.ChangeColor($"\nПогрішність: {error}", ConsoleColor.DarkMagenta);
+
             return sum * h;
         }
 
@@ -204,6 +223,9 @@ namespace IntegralCalculator
                 sum += f;
                 Console.WriteLine($"f({a + i * h}) = {f} * {h}");
             }
+
+            double error = Math.Abs((b - a) / (2 * n) * (Function(a, n) + 2 * sum + Function(b, n)));
+            TextViewer.ChangeColor($"\nПогрішність: {error}", ConsoleColor.DarkMagenta);
 
             return h * (0.5 * (Function(a, n) + Function(b, n)) + sum);
         }
@@ -234,6 +256,9 @@ namespace IntegralCalculator
                 Console.WriteLine($"f({a + i * h}) = {f} * {h}");
             }
 
+            double error = Math.Abs((b - a) / (3 * n) * (Function(a, n) + 4 * sum1 + 2 * sum2 + Function(b, n)));
+            TextViewer.ChangeColor($"\nПогрішність: {error}", ConsoleColor.DarkMagenta);
+
             return h / 3 * (Function(a, n) + 4 * sum1 + 2 * sum2 + Function(b, n));
         }
 
@@ -251,7 +276,7 @@ namespace IntegralCalculator
                 writer.WriteLine(new string('-', 50));
             }
 
-            Console.WriteLine($"Результати збережено у файл {fileName}");
+            Console.WriteLine($"\nРезультати збережено у файл {fileName}\n");
         }
     }
 }
